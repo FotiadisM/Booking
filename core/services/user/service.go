@@ -4,54 +4,56 @@ import (
 	"context"
 	"errors"
 	"time"
-)
 
-// User defines the properties of a User
-type User struct {
-	ID        string `json:"id"`
-	Email     string `json:"email"`
-	FirstName string `json:"first_name"`
-	LastName  string `json:"last_name"`
-	Created   int64  `json:"-"`
-}
+	"github.com/google/uuid"
+)
 
 // ServiceModel defines the properties of a user service
 type ServiceModel interface {
-	GetUser(context.Context, string) (*User, error)
-	CreateUser(context.Context, string, string, string) (*User, error)
+	GetByID(context.Context, string) (*User, error)
+	Create(context.Context, *User) (string, error)
 }
 
 // Service containes the buisness logic
-type Service struct{}
+type Service struct {
+	repository Repository
+}
+
+// NewService returns a Service object
+func NewService(r Repository) *Service {
+	return &Service{repository: r}
+}
 
 var (
 	// ErrNotFound returned if the user is not found
 	ErrNotFound = errors.New("User not found")
+	// ErrUUIDGen returned if uuid.NewRandom() fails
+	ErrUUIDGen = errors.New("Failed to generate uuid")
 )
 
-var userRepo []*User
+// GetByID takes the id of a user and return it from the databse
+func (s *Service) GetByID(ctx context.Context, id string) (u *User, err error) {
 
-// GetUser takes the id of a user and return it from the databse
-func (Service) GetUser(ctx context.Context, ID string) (*User, error) {
-	for _, v := range userRepo {
-		if v.ID == ID {
-			return v, nil
-		}
+	if u, err = s.repository.GetUserByID(ctx, id); err != nil {
+		return nil, ErrNotFound
 	}
 
-	return nil, ErrNotFound
+	return
 }
 
-// CreateUser creates a new user and stores it in the databse
-func (Service) CreateUser(ctx context.Context, email string, firstName string, lastName string) (*User, error) {
-	u := &User{
-		ID:        "1234",
-		Email:     email,
-		FirstName: firstName,
-		LastName:  lastName,
-		Created:   time.Now().UTC().Unix(),
-	}
-	userRepo = append(userRepo, u)
+// Create creates a new user and stores it in the databse
+func (s *Service) Create(ctx context.Context, u *User) (id string, err error) {
 
-	return u, nil
+	uuid, err := uuid.NewRandom()
+	if err != nil {
+		return
+	}
+	id = uuid.String()
+
+	u.ID = id
+	u.Created = time.Now().UTC().Unix()
+
+	err = s.repository.CreateUser(ctx, u)
+
+	return
 }

@@ -1,7 +1,7 @@
 {
     "folders": [
       {
-	"name": "server",
+	"name": "core",
         "path": "core"
       },
       {

@@ -6,3 +6,9 @@ github.com/go-kit/kit/transport
 github.com/go-kit/kit/transport/http
 # github.com/go-logfmt/logfmt v0.5.0
 github.com/go-logfmt/logfmt
+# github.com/google/uuid v1.1.2
+## explicit
+github.com/google/uuid
+# github.com/gorilla/mux v1.7.3
+## explicit
+github.com/gorilla/mux

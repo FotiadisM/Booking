@@ -13,8 +13,9 @@ type LoggingMiddleware struct {
 	Next   ServiceModel
 }
 
-// GetUser logs info about GetUser
-func (mw LoggingMiddleware) GetUser(ctx context.Context, ID string) (u *User, err error) {
+// GetByID logs info about GetUser
+func (mw LoggingMiddleware) GetByID(ctx context.Context, id string) (u *User, err error) {
+
 	defer func(begin time.Time) {
 		_ = mw.Logger.Log(
 			"method", "GetUser",
@@ -23,12 +24,13 @@ func (mw LoggingMiddleware) GetUser(ctx context.Context, ID string) (u *User, er
 		)
 	}(time.Now())
 
-	u, err = mw.Next.GetUser(ctx, ID)
+	u, err = mw.Next.GetByID(ctx, id)
 	return
 }
 
-// CreateUser logs info about CreateUser
-func (mw LoggingMiddleware) CreateUser(ctx context.Context, email string, firstName string, lastName string) (u *User, err error) {
+// Create logs info about CreateUser
+func (mw LoggingMiddleware) Create(ctx context.Context, u *User) (id string, err error) {
+
 	defer func(begin time.Time) {
 		_ = mw.Logger.Log(
 			"method", "CreateUser",
@@ -37,6 +39,7 @@ func (mw LoggingMiddleware) CreateUser(ctx context.Context, email string, firstN
 		)
 	}(time.Now())
 
-	u, err = mw.Next.CreateUser(ctx, email, firstName, lastName)
+	id, err = mw.Next.Create(ctx, u)
+
 	return
 }
