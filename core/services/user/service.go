@@ -53,7 +53,9 @@ func (s *Service) Create(ctx context.Context, u *User) (id string, err error) {
 	u.ID = id
 	u.Created = time.Now().UTC().Unix()
 
-	err = s.repository.CreateUser(ctx, u)
+	if err = s.repository.CreateUser(ctx, u); err != nil {
+		return "", err
+	}
 
 	return
 }

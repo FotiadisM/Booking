@@ -1,4 +1,4 @@
-package user
+package listing
 
 import (
 	"context"
@@ -8,13 +8,26 @@ import (
 	"github.com/gorilla/mux"
 )
 
+type getAllRequest struct{}
+
+type getAllResponse struct {
+	Ls  []*Listing `json:"listings,omitempty"`
+	Err string     `json:"error,omitempty"`
+}
+
+// decodeGetAllRequest decodes a GetUser request
+func decodeGetAllRequest(_ context.Context, r *http.Request) (interface{}, error) {
+
+	return getAllRequest{}, nil
+}
+
 type getByIDRequest struct {
 	ID string `json:"id"`
 }
 
 type getByIDResponse struct {
-	U   *User  `json:"user,omitempty"`
-	Err string `json:"error,omitempty"`
+	L   *Listing `json:"listing,omitempty"`
+	Err string   `json:"error,omitempty"`
 }
 
 // DecodeGetUserRequest decodes a GetUser request
@@ -28,7 +41,7 @@ func decodeGetByIDRequest(_ context.Context, r *http.Request) (interface{}, erro
 }
 
 type createRequest struct {
-	U *User
+	L *Listing
 }
 
 type createResponse struct {
@@ -38,10 +51,10 @@ type createResponse struct {
 
 // DecodeCreateUserRequest decodes a CreateUser request
 func decodeCreateRequest(_ context.Context, r *http.Request) (interface{}, error) {
-	u := &User{}
-	if err := json.NewDecoder(r.Body).Decode(u); err != nil {
+	l := &Listing{}
+	if err := json.NewDecoder(r.Body).Decode(l); err != nil {
 		return nil, err
 	}
 
-	return createRequest{U: u}, nil
+	return createRequest{L: l}, nil
 }

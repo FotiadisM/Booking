@@ -9,28 +9,29 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/FotiadisM/booking/core/services/user"
+	"github.com/FotiadisM/booking/core/services/listing"
 	"github.com/go-kit/kit/log"
 	"github.com/gorilla/mux"
 )
 
 func main() {
 	host := flag.String("host", "localhost", "http host")
-	port := flag.String("port", "8080", "http port")
+	port := flag.String("port", "8090", "http port")
 	flag.Parse()
 
 	logger := log.NewLogfmtLogger(os.Stderr)
-	logger = log.With(logger, "service", "user")
+	logger = log.With(logger, "service", "listing")
 
 	repo := newRepository()
 
-	var svc user.ServiceModel
-	svc = user.NewService(repo)
-	svc = user.LoggingMiddleware{Logger: logger, Next: svc}
+	var svc listing.ServiceModel
+	svc = listing.NewService(repo)
+	svc = listing.LoggingMiddleware{Logger: logger, Next: svc}
 
 	r := mux.NewRouter()
-	r.Handle("/users/{id}", user.GetByIDHandler(svc)).Methods("GET")
-	r.Handle("/users", user.CreateHandler(svc)).Methods("POST")
+	r.Handle("/listings/{id}", listing.GetByIDHandler(svc)).Methods("GET")
+	r.Handle("/listings", listing.GetAllHandler(svc)).Methods("GET")
+	r.Handle("/listings", listing.CreateHandler(svc)).Methods("POST")
 
 	s := http.Server{
 		Addr:         *host + ":" + *port,
@@ -41,6 +42,7 @@ func main() {
 	}
 
 	errs := make(chan error)
+
 	go func() {
 		c := make(chan os.Signal, 1)
 		signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)
