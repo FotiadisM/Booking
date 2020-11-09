@@ -1,15 +1,18 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"net/http"
+	"net/url"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
 	"github.com/FotiadisM/booking/core/services/listing"
+	searchconsumer "github.com/FotiadisM/booking/core/services/search_consumer"
 	"github.com/go-kit/kit/log"
 	"github.com/gorilla/mux"
 )
@@ -53,6 +56,30 @@ func main() {
 		logger.Log("msg", "HTTP", "host", *host, "port", *port)
 		errs <- s.ListenAndServe()
 	}()
+
+	type addListingRequest struct {
+		L *listing.Listing `json:"listing"`
+	}
+
+	type addListingResponse struct {
+		Err string `json:"error,omitempty"`
+	}
+
+	u := &url.URL{
+		Scheme: "http",
+		Host:   "localhost:8060",
+		Path:   "/search_consumer/listing",
+	}
+
+	cl := searchconsumer.AddListingClient(u)
+	e := cl.Endpoint()
+
+	req := addListingRequest{L: &listing.Listing{UserID: "1234"}}
+
+	_, err := e(context.Background(), req)
+	if err != nil {
+		logger.Log("error", err)
+	}
 
 	logger.Log("exit", <-errs)
 }

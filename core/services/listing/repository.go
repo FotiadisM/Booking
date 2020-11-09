@@ -1,6 +1,8 @@
 package listing
 
-import "context"
+import (
+	"context"
+)
 
 // Listing defines the properties of a Listing
 type Listing struct {

@@ -1,4 +1,4 @@
-package listing
+package review
 
 import (
 	"context"
@@ -11,8 +11,8 @@ import (
 type getAllRequest struct{}
 
 type getAllResponse struct {
-	Ls  []*Listing `json:"listings,omitempty"`
-	Err string     `json:"error,omitempty"`
+	Rs  []*Review `json:"reviews,omitempty"`
+	Err string    `json:"error,omitempty"`
 }
 
 // decodeGetAllRequest decodes a GetUser request
@@ -21,25 +21,25 @@ func decodeGetAllRequest(_ context.Context, r *http.Request) (interface{}, error
 	return getAllRequest{}, nil
 }
 
-type getByIDRequest struct {
+type getByListingIDRequest struct {
 	ID string `json:"id"`
 }
 
-type getByIDResponse struct {
-	L   *Listing `json:"listing,omitempty"`
-	Err string   `json:"error,omitempty"`
+type getByListingIDResponse struct {
+	Rs  []*Review `json:"reviews,omitempty"`
+	Err string    `json:"error,omitempty"`
 }
 
 // DecodeGetUserRequest decodes a GetUser request
-func decodeGetByIDRequest(_ context.Context, r *http.Request) (interface{}, error) {
+func decodeGetByListingIDRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	vars := mux.Vars(r)
 	id := vars["id"]
 
-	return getByIDRequest{ID: id}, nil
+	return getByListingIDRequest{ID: id}, nil
 }
 
 type createRequest struct {
-	L *Listing
+	R *Review
 }
 
 type createResponse struct {
@@ -49,10 +49,10 @@ type createResponse struct {
 
 // DecodeCreateUserRequest decodes a CreateUser request
 func decodeCreateRequest(_ context.Context, r *http.Request) (interface{}, error) {
-	l := &Listing{}
-	if err := json.NewDecoder(r.Body).Decode(l); err != nil {
+	rev := &Review{}
+	if err := json.NewDecoder(r.Body).Decode(rev); err != nil {
 		return nil, err
 	}
 
-	return createRequest{L: l}, nil
+	return createRequest{R: rev}, nil
 }

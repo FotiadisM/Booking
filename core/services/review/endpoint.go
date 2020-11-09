@@ -1,4 +1,4 @@
-package listing
+package review
 
 import (
 	"context"
@@ -8,31 +8,31 @@ import (
 
 func makeGetAllEndpoint(svc ServiceModel) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
-		ls, err := svc.GetAll(ctx)
+		rs, err := svc.GetAll(ctx)
 		if err != nil {
 			return getAllResponse{nil, err.Error()}, nil
 		}
 
-		return getAllResponse{ls, ""}, nil
+		return getAllResponse{rs, ""}, nil
 	}
 }
 
-func makeGetByIDEndpoint(svc ServiceModel) endpoint.Endpoint {
+func makeGetByListingIDEndpoint(svc ServiceModel) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
-		req := request.(getByIDRequest)
-		l, err := svc.GetByID(ctx, req.ID)
+		req := request.(getByListingIDRequest)
+		rs, err := svc.GetByListingID(ctx, req.ID)
 		if err != nil {
-			return getByIDResponse{nil, err.Error()}, nil
+			return getByListingIDResponse{nil, err.Error()}, nil
 		}
 
-		return getByIDResponse{l, ""}, nil
+		return getByListingIDResponse{rs, ""}, nil
 	}
 }
 
 func makeCreateEndpoint(svc ServiceModel) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req := request.(createRequest)
-		id, err := svc.Create(ctx, req.L)
+		id, err := svc.Create(ctx, req.R)
 		if err != nil {
 			return createResponse{"", err.Error()}, nil
 		}
