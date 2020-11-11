@@ -42,4 +42,5 @@ type Repository interface {
 	GetListings(context.Context) ([]*Listing, error)
 	GetListingByID(context.Context, string) (*Listing, error)
 	CreateListing(context.Context, *Listing) error
+	UpdateListing(context.Context, *Listing) error
 }

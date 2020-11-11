@@ -56,3 +56,22 @@ func decodeCreateRequest(_ context.Context, r *http.Request) (interface{}, error
 
 	return createRequest{R: rev}, nil
 }
+
+// for listing svc
+type addReviewToListingRequest struct {
+	ID    string  `json:"listing_id"`
+	Score float32 `json:"score"`
+}
+
+type addReviewToListingResponse struct {
+	Err string `json:"error,omitempty"`
+}
+
+// for serch_consumer svc
+type addReviewRequest struct {
+	R *Review `json:"review"`
+}
+
+type addReviewResponse struct {
+	Err string `json:"error,omitempty"`
+}

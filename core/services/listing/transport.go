@@ -56,3 +56,41 @@ func decodeCreateRequest(_ context.Context, r *http.Request) (interface{}, error
 
 	return createRequest{L: l}, nil
 }
+
+type addReviewToListingRequest struct {
+	ID    string  `json:"listing_id"`
+	Score float32 `json:"score"`
+}
+
+type addReviewToListingResponse struct {
+	Err string `json:"error,omitempty"`
+}
+
+// DecodeCreateUserRequest decodes a CreateUser request
+func decodeAddReviewToListingRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	var m map[string]interface{}
+	if err := json.NewDecoder(r.Body).Decode(&m); err != nil {
+		return nil, err
+	}
+
+	return addReviewToListingRequest{ID: m["listing_id"].(string), Score: m["score"].(float32)}, nil
+}
+
+// DecodeCreateUserResponse decodes a CreateUser request
+func decodeAddReviewToListingRespnose(_ context.Context, r *http.Response) (interface{}, error) {
+	var res addReviewToListingResponse
+
+	if err := json.NewDecoder(r.Body).Decode(&res); err != nil {
+		return nil, err
+	}
+
+	return res, nil
+}
+
+type addListingRequest struct {
+	L *Listing `json:"listing"`
+}
+
+type addListingResponse struct {
+	Err string `json:"error,omitempty"`
+}

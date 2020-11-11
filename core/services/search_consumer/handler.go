@@ -33,3 +33,13 @@ func AddListingClient(u *url.URL) *http.Client {
 		decodeAddListingResponse,
 	)
 }
+
+// AddReviewClient returns a http Client
+func AddReviewClient(u *url.URL) *http.Client {
+	return http.NewClient(
+		"PUT",
+		u,
+		http.EncodeJSONRequest,
+		decodeAddReviewResponse,
+	)
+}

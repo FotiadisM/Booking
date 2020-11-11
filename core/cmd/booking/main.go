@@ -9,28 +9,37 @@ import (
 	"syscall"
 	"time"
 
-	searchconsumer "github.com/FotiadisM/booking/core/services/search_consumer"
+	"github.com/FotiadisM/booking/core/services/booking"
 	"github.com/go-kit/kit/log"
 	"github.com/gorilla/mux"
 )
 
 func main() {
 	host := flag.String("host", "localhost", "http host")
-	port := flag.String("port", "8060", "http port")
+	port := flag.String("port", "8010", "http port")
 	flag.Parse()
 
 	logger := log.NewLogfmtLogger(os.Stderr)
-	logger = log.With(logger, "service", "search_consumer")
+	logger = log.With(logger, "service", "booking")
 
 	repo := newRepository()
 
-	var svc searchconsumer.ServiceModel
-	svc = searchconsumer.NewService(repo)
-	svc = searchconsumer.LoggingMiddleware{Logger: logger, Next: svc}
+	var svc booking.ServiceModel
+
+	// u := &url.URL{
+	// 	Scheme: "http",
+	// 	Host:   "localhost:8060",
+	// 	Path:   "/search_consumer/booking",
+	// }
+
+	// cl := searchconsumer.AddListingClient(u)
+	// e := cl.Endpoint()
+
+	svc = booking.NewService(repo)
+	svc = booking.LoggingMiddleware{Logger: logger, Next: svc}
 
 	r := mux.NewRouter()
-	r.Handle("/search_consumer/listing", searchconsumer.AddListingHandler(svc)).Methods("POST")
-	r.Handle("/search_consumer/review", searchconsumer.AddReviewHandler(svc)).Methods("POST")
+	r.Handle("/booking", booking.ConfirmPaymentHandler(svc)).Methods("POST")
 
 	s := http.Server{
 		Addr:         *host + ":" + *port,

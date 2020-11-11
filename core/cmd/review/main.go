@@ -4,12 +4,14 @@ import (
 	"flag"
 	"fmt"
 	"net/http"
+	"net/url"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
 	"github.com/FotiadisM/booking/core/services/review"
+	searchconsumer "github.com/FotiadisM/booking/core/services/search_consumer"
 	"github.com/go-kit/kit/log"
 	"github.com/gorilla/mux"
 )
@@ -25,7 +27,22 @@ func main() {
 	repo := newRepository()
 
 	var svc review.ServiceModel
-	svc = review.NewService(repo)
+
+	scu := &url.URL{
+		Scheme: "http",
+		Host:   "localhost:8060",
+		Path:   "/search_consumer/review",
+	}
+	sccl := searchconsumer.AddReviewClient(scu)
+
+	lu := &url.URL{
+		Scheme: "http",
+		Host:   "localhost:8090",
+		Path:   "/listing",
+	}
+	lcl := searchconsumer.AddReviewClient(lu)
+
+	svc = review.NewService(repo, sccl.Endpoint(), lcl.Endpoint())
 	svc = review.LoggingMiddleware{Logger: logger, Next: svc}
 
 	r := mux.NewRouter()
@@ -42,7 +59,6 @@ func main() {
 	}
 
 	errs := make(chan error)
-
 	go func() {
 		c := make(chan os.Signal, 1)
 		signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)

@@ -3,7 +3,6 @@ package searchconsumer
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"net/http"
 
 	"github.com/FotiadisM/booking/core/services/listing"
@@ -35,7 +34,7 @@ func decodeAddListingResponse(_ context.Context, r *http.Response) (response int
 		return nil, err
 	}
 
-	return response, errors.New(res.Err)
+	return response, nil
 }
 
 type addReviewRequest struct {
@@ -54,4 +53,14 @@ func decodeAddReviewRequest(_ context.Context, r *http.Request) (interface{}, er
 	}
 
 	return addReviewRequest{R: rev}, nil
+}
+
+func decodeAddReviewResponse(_ context.Context, r *http.Response) (response interface{}, err error) {
+
+	res := &addReviewResponse{}
+	if err := json.NewDecoder(r.Body).Decode(res); err != nil {
+		return nil, err
+	}
+
+	return response, nil
 }

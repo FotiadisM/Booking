@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"flag"
 	"fmt"
 	"net/http"
@@ -28,42 +27,6 @@ func main() {
 	repo := newRepository()
 
 	var svc listing.ServiceModel
-	svc = listing.NewService(repo)
-	svc = listing.LoggingMiddleware{Logger: logger, Next: svc}
-
-	r := mux.NewRouter()
-	r.Handle("/listings/{id}", listing.GetByIDHandler(svc)).Methods("GET")
-	r.Handle("/listings", listing.GetAllHandler(svc)).Methods("GET")
-	r.Handle("/listings", listing.CreateHandler(svc)).Methods("POST")
-
-	s := http.Server{
-		Addr:         *host + ":" + *port,
-		Handler:      r,
-		ReadTimeout:  1 * time.Second,
-		WriteTimeout: 1 * time.Second,
-		IdleTimeout:  120 * time.Second,
-	}
-
-	errs := make(chan error)
-
-	go func() {
-		c := make(chan os.Signal, 1)
-		signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)
-		errs <- fmt.Errorf("%s", <-c)
-	}()
-
-	go func() {
-		logger.Log("msg", "HTTP", "host", *host, "port", *port)
-		errs <- s.ListenAndServe()
-	}()
-
-	type addListingRequest struct {
-		L *listing.Listing `json:"listing"`
-	}
-
-	type addListingResponse struct {
-		Err string `json:"error,omitempty"`
-	}
 
 	u := &url.URL{
 		Scheme: "http",
@@ -74,12 +37,34 @@ func main() {
 	cl := searchconsumer.AddListingClient(u)
 	e := cl.Endpoint()
 
-	req := addListingRequest{L: &listing.Listing{UserID: "1234"}}
+	svc = listing.NewService(repo, e)
+	svc = listing.LoggingMiddleware{Logger: logger, Next: svc}
 
-	_, err := e(context.Background(), req)
-	if err != nil {
-		logger.Log("error", err)
+	r := mux.NewRouter()
+	r.Handle("/listings/{id}", listing.GetByIDHandler(svc)).Methods("GET")
+	r.Handle("/listings", listing.GetAllHandler(svc)).Methods("GET")
+	r.Handle("/listings", listing.CreateHandler(svc)).Methods("POST")
+	r.Handle("/listings", listing.AddReviewToListingHandler(svc)).Methods("PUT")
+
+	s := http.Server{
+		Addr:         *host + ":" + *port,
+		Handler:      r,
+		ReadTimeout:  1 * time.Second,
+		WriteTimeout: 1 * time.Second,
+		IdleTimeout:  120 * time.Second,
 	}
+
+	errs := make(chan error)
+	go func() {
+		c := make(chan os.Signal, 1)
+		signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)
+		errs <- fmt.Errorf("%s", <-c)
+	}()
+
+	go func() {
+		logger.Log("msg", "HTTP", "host", *host, "port", *port)
+		errs <- s.ListenAndServe()
+	}()
 
 	logger.Log("exit", <-errs)
 }

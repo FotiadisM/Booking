@@ -58,3 +58,18 @@ func (mw LoggingMiddleware) Create(ctx context.Context, l *Listing) (id string, 
 
 	return
 }
+
+// AddReviewToListing logs info about CreateUser
+func (mw LoggingMiddleware) AddReviewToListing(ctx context.Context, id string, score float32) (err error) {
+	defer func(begin time.Time) {
+		_ = mw.Logger.Log(
+			"method", "CreateUser",
+			"err", err,
+			"took", time.Since(begin),
+		)
+	}(time.Now())
+
+	err = mw.Next.AddReviewToListing(ctx, id, score)
+
+	return
+}

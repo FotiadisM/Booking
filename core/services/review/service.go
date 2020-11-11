@@ -5,6 +5,7 @@ import (
 	"errors"
 	"time"
 
+	"github.com/go-kit/kit/endpoint"
 	"github.com/google/uuid"
 )
 
@@ -17,12 +18,17 @@ type ServiceModel interface {
 
 // Service containes the buisness logic
 type Service struct {
-	repository Repository
+	repository         Repository
+	addReviewToSearch  endpoint.Endpoint
+	addReviewToListing endpoint.Endpoint
 }
 
 // NewService returns a Service object
-func NewService(r Repository) *Service {
-	return &Service{repository: r}
+func NewService(r Repository, se endpoint.Endpoint, le endpoint.Endpoint) *Service {
+	return &Service{repository: r,
+		addReviewToSearch:  se,
+		addReviewToListing: le,
+	}
 }
 
 var (
@@ -63,6 +69,16 @@ func (s *Service) Create(ctx context.Context, r *Review) (id string, err error) 
 
 	if err = s.repository.CreateReview(ctx, r); err != nil {
 		return "", err
+	}
+
+	_, err = s.addReviewToSearch(ctx, addReviewRequest{R: r})
+	if err != nil {
+		return
+	}
+
+	_, err = s.addReviewToListing(ctx, addReviewToListingRequest{ID: id, Score: r.Score})
+	if err != nil {
+		return
 	}
 
 	return

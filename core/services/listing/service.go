@@ -5,6 +5,7 @@ import (
 	"errors"
 	"time"
 
+	"github.com/go-kit/kit/endpoint"
 	"github.com/google/uuid"
 )
 
@@ -13,16 +14,22 @@ type ServiceModel interface {
 	GetAll(context.Context) ([]*Listing, error)
 	GetByID(context.Context, string) (*Listing, error)
 	Create(context.Context, *Listing) (string, error)
+	AddReviewToListing(context.Context, string, float32) error
 }
 
 // Service containes the buisness logic
 type Service struct {
-	repository Repository
+	repository         Repository
+	addListingToSearch endpoint.Endpoint
+	addReviewToListing endpoint.Endpoint
 }
 
 // NewService returns a Service object
-func NewService(r Repository) *Service {
-	return &Service{repository: r}
+func NewService(r Repository, e endpoint.Endpoint) *Service {
+	return &Service{
+		repository:         r,
+		addListingToSearch: e,
+	}
 }
 
 var (
@@ -63,6 +70,30 @@ func (s *Service) Create(ctx context.Context, l *Listing) (id string, err error)
 
 	if err = s.repository.CreateListing(ctx, l); err != nil {
 		return "", err
+	}
+
+	// ctx, cancel := context.WithDeadline(ctx, time.Now().Add(1*time.Second))
+	// defer cancel()
+
+	res, err := s.addListingToSearch(ctx, addListingRequest{L: l})
+	res = res.(addListingResponse)
+
+	return
+}
+
+// AddReviewToListing updates the listing.ID == id with the new score
+func (s *Service) AddReviewToListing(ctx context.Context, id string, score float32) (err error) {
+	l, err := s.repository.GetListingByID(ctx, id)
+	if err != nil {
+		return
+	}
+
+	oldSum := float32(l.ReviewNum) * l.ReviewAvrg
+	l.ReviewNum++
+	l.ReviewAvrg = (oldSum + score) / float32(l.ReviewNum)
+
+	if err = s.repository.UpdateListing(ctx, l); err != nil {
+		return
 	}
 
 	return

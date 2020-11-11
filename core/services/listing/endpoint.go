@@ -40,3 +40,15 @@ func makeCreateEndpoint(svc ServiceModel) endpoint.Endpoint {
 		return createResponse{id, ""}, nil
 	}
 }
+
+func makeAddReviewToListing(svc ServiceModel) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (interface{}, error) {
+		req := request.(addReviewToListingRequest)
+		err := svc.AddReviewToListing(ctx, req.ID, req.Score)
+		if err != nil {
+			return addListingResponse{err.Error()}, nil
+		}
+
+		return addListingResponse{err.Error()}, nil
+	}
+}

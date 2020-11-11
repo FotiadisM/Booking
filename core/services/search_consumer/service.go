@@ -27,13 +27,14 @@ func NewService(r Repository) *Service {
 
 // AddListing adds the newly created listing to the search databse
 func (s *Service) AddListing(context.Context, *listing.Listing) (err error) {
-	fmt.Println("IT WORKED")
+	fmt.Println("ADD LISTING")
 
 	return
 }
 
 // AddReview adds the newly created review to the search databse
 func (s *Service) AddReview(context.Context, *review.Review) (err error) {
+	fmt.Println("ADD REVIEW")
 
 	return
 }

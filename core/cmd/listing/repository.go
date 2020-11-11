@@ -34,5 +34,16 @@ func (r *repository) GetListingByID(ctx context.Context, id string) (l *listing.
 		}
 	}
 
-	return nil, errors.New("Not found")
+	return nil, errors.New("Listing not found")
+}
+
+func (r *repository) UpdateListing(ctx context.Context, l *listing.Listing) (err error) {
+	for i := range r.db {
+		if r.db[i].ID == l.ID {
+			r.db[i] = l
+			return
+		}
+	}
+
+	return errors.New("Listing not found")
 }
