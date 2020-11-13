@@ -1,19 +1,17 @@
-FROM golang:1.15
+FROM golang:1.15 as Builder
 
 WORKDIR /build
-
 COPY go.mod .
 COPY go.sum .
-
 RUN go mod download
-
 COPY . .
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o listingsvc ./cmd/listing/main.go ./cmd/listing/repository.go
 
-RUN go build -o listingsvc ./cmd/listing/main.go ./cmd/listing/repository.go
+FROM alpine:3.12.1
 
 WORKDIR /bin
-
-RUN cp /build/listingsvc /bin
+RUN apk --no-cache add ca-certificates
+COPY --from=Builder /build/listingsvc .
 
 EXPOSE 8080
 

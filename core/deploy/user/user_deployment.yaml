@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: usersvc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: usersvc
+  template:
+    metadata:
+      labels:
+        app: usersvc
+    spec:
+      containers:
+      - name: usersvc
+        image: natharielmorgoth/usersvc
+        imagePullPolicy: IfNotPresent
+        resources: 
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 8080
