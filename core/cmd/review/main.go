@@ -17,8 +17,7 @@ import (
 )
 
 func main() {
-	host := flag.String("host", "localhost", "http host")
-	port := flag.String("port", "8070", "http port")
+	port := flag.String("port", "8080", "http port")
 	flag.Parse()
 
 	logger := log.NewLogfmtLogger(os.Stderr)
@@ -30,7 +29,7 @@ func main() {
 
 	scu := &url.URL{
 		Scheme: "http",
-		Host:   "localhost:8060",
+		Host:   "localhost:8080",
 		Path:   "/search_consumer/review",
 	}
 	sccl := searchconsumer.AddReviewClient(scu)
@@ -51,7 +50,7 @@ func main() {
 	r.Handle("/reviews", review.CreateHandler(svc)).Methods("POST")
 
 	s := http.Server{
-		Addr:         *host + ":" + *port,
+		Addr:         ":" + *port,
 		Handler:      r,
 		ReadTimeout:  1 * time.Second,
 		WriteTimeout: 1 * time.Second,
@@ -66,7 +65,7 @@ func main() {
 	}()
 
 	go func() {
-		logger.Log("msg", "HTTP", "host", *host, "port", *port)
+		logger.Log("msg", "HTTP", "port", *port)
 		errs <- s.ListenAndServe()
 	}()
 

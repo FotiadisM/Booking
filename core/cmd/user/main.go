@@ -15,7 +15,6 @@ import (
 )
 
 func main() {
-	host := flag.String("host", "localhost", "http host")
 	port := flag.String("port", "8080", "http port")
 	flag.Parse()
 
@@ -33,7 +32,7 @@ func main() {
 	r.Handle("/users", user.CreateHandler(svc)).Methods("POST")
 
 	s := http.Server{
-		Addr:         *host + ":" + *port,
+		Addr:         ":" + *port,
 		Handler:      r,
 		ReadTimeout:  1 * time.Second,
 		WriteTimeout: 1 * time.Second,
@@ -48,7 +47,7 @@ func main() {
 	}()
 
 	go func() {
-		logger.Log("msg", "HTTP", "host", *host, "port", *port)
+		logger.Log("msg", "HTTP", "port", *port)
 		errs <- s.ListenAndServe()
 	}()
 
