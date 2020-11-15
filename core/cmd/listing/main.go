@@ -27,9 +27,10 @@ func main() {
 
 	var svc listing.ServiceModel
 
+	fmt.Println("ulr:", os.Getenv("SEARCHCONSUMERSVC_URL"))
 	u := &url.URL{
 		Scheme: "http",
-		Host:   "localhost:8060",
+		Host:   os.Getenv("SEARCHCONSUMERSVC_URL"),
 		Path:   "/search_consumer/listing",
 	}
 

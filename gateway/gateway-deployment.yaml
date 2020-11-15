@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gateway-deployment
+  labels:
+    app: gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gateway
+  template:
+    metadata:
+      labels:
+        app: gateway
+    spec:
+      containers:
+      - name: gateway
+        image: localhost:5000/gateway
+        ports:
+        - containerPort: 8080
+        env:
+          - name: USERSVC_URL
+            valueFrom:
+              configMapKeyRef:
+                name: usersvc-configmap
+                key: svc_url
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gateway-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: gateway
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+      nodePort: 30000

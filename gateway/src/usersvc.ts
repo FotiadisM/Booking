@@ -4,7 +4,7 @@ export const getUserByID = async (id: string): Promise<AxiosResponse> => {
   return await axios.request({
     method: "GET",
     url: "/users/" + id,
-    baseURL: "http://localhost:8080",
+    baseURL: "http://" + process.env.USERSVC_URL,
   });
 };
 

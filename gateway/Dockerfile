@@ -8,8 +8,6 @@ RUN yarn install
 
 COPY dist ./dist
 
-RUN ls -la
-
 EXPOSE 8080
 
 CMD [ "yarn", "start" ]

@@ -7,6 +7,10 @@ app.use(bodyParser.json());
 
 const port = 8070;
 
+app.get("/", (_, res) => {
+  res.send("HELLOOO WORLD!!");
+});
+
 app.get("/users/:id", async (req, res) => {
   try {
     const response = await getUserByID(req.params.id);

@@ -1,32 +1,32 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: usersvc-deployment
+  name: searchconsumersvc-deployment
   labels:
-    app: usersvc
+    app: searchconsumersvc
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: usersvc
+      app: searchconsumersvc
   template:
     metadata:
       labels:
-        app: usersvc
+        app: searchconsumersvc
     spec:
       containers:
-      - name: usersvc
-        image: localhost:5000/usersvc
+      - name: searchconsumersvc
+        image: localhost:5000/searchconsumersvc
         ports:
         - containerPort: 8080
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: usersvc-service
+  name: searchconsumersvc-service
 spec:
   selector:
-    app: usersvc
+    app: searchconsumersvc
   ports:
     - protocol: TCP
       port: 8080
@@ -35,6 +35,6 @@ spec:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: usersvc-configmap
+  name: searchconsumersvc-configmap
 data:
-  svc_url: usersvc-service
+  svc_url: searchconsumersvc-service

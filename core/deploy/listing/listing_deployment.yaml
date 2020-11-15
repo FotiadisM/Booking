@@ -1,7 +1,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: listingsvc
+  name: listingsvc-deployment
+  labels:
+    app: listingsvc
 spec:
   replicas: 1
   selector:
@@ -15,6 +17,30 @@ spec:
       containers:
       - name: listingsvc
         image: localhost:5000/listingsvc
-        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8080
+        env:
+          - name: SEARCHCONSUMERSVC_URL
+            valueFrom:
+                configMapKeyRef:
+                  name: searchconsumersvc-configmap
+                  key: svc_url
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: usersvc-service
+spec:
+  selector:
+    app: usersvc
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: usersvc-configmap
+data:
+  svc_url: usersvc-service
