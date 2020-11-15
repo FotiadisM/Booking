@@ -1,6 +1,10 @@
 {
     "folders": [
       {
+        "name": "gateway",
+        "path": "gateway"
+      },
+      {
 	"name": "core",
         "path": "core"
       },
@@ -9,5 +13,7 @@
         "path": "web"
       }
     ],
-    "settings": {}
+    "settings": {
+      "typescript.tsdk": "gateway/node_modules/typescript/lib"
+    }
   }

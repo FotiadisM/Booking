@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: usersvc
+  name: listingsvc
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: usersvc
+      app: listingsvc
   template:
     metadata:
       labels:
-        app: usersvc
+        app: listingsvc
     spec:
       containers:
-      - name: usersvc
-        image: localhost:5000/usersvc
+      - name: listingsvc
+        image: localhost:5000/listingsvc
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8080
