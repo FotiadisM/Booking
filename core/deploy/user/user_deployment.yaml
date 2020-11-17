@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: usersvc
-        image: localhost:5000/usersvc
+        image: localhost:5000/usersvc:latest
         ports:
         - containerPort: 8080
 ---

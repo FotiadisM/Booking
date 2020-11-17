@@ -1,10 +1,14 @@
 import axios, { AxiosResponse } from "axios";
 
+const proto = "http://";
+const host = process.env.USERSVC_SERVICE_SERVICE_HOST;
+const port = process.env.USERSVC_SERVICE_SERVICE_PORT;
+
 export const getUserByID = async (id: string): Promise<AxiosResponse> => {
   return await axios.request({
     method: "GET",
     url: "/users/" + id,
-    baseURL: "http://" + process.env.USERSVC_URL,
+    baseURL: proto + host + ":" + port,
   });
 };
 
@@ -14,7 +18,7 @@ export const createUser = async (
   return await axios.request({
     method: "POST",
     url: "/users",
-    baseURL: "http://localhost:8080",
+    baseURL: proto + host + ":" + port,
     headers: {
       "Content-Type": "application/json",
     },

@@ -44,7 +44,11 @@ var body_parser_1 = __importDefault(require("body-parser"));
 var usersvc_1 = require("./src/usersvc");
 var app = express_1.default();
 app.use(body_parser_1.default.json());
-var port = 8070;
+var port = 8080;
+console.log("USERSVC:", process.env.USERSVC_URL);
+app.get("/", function (_, res) {
+    res.send("HELLOOO WORLD!!");
+});
 app.get("/users/:id", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var response, err_1;
     return __generator(this, function (_a) {

@@ -5,7 +5,9 @@ import { createUser, getUserByID } from "./src/usersvc";
 const app = express();
 app.use(bodyParser.json());
 
-const port = 8070;
+const port = 8080;
+
+console.log("USERSVC:", process.env.USERSVC_URL);
 
 app.get("/", (_, res) => {
   res.send("HELLOOO WORLD!!");

@@ -41,13 +41,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createUser = exports.getUserByID = void 0;
 var axios_1 = __importDefault(require("axios"));
+var proto = "http://";
+var host = process.env.USERSVC_SERVICE_SERVICE_HOST;
+var port = process.env.USERSVC_SERVICE_SERVICE_PORT;
 exports.getUserByID = function (id) { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0: return [4 /*yield*/, axios_1.default.request({
                     method: "GET",
                     url: "/users/" + id,
-                    baseURL: "http://localhost:8080",
+                    baseURL: proto + host + ":" + port,
                 })];
             case 1: return [2 /*return*/, _a.sent()];
         }
@@ -59,7 +62,7 @@ exports.createUser = function (data) { return __awaiter(void 0, void 0, void 0, 
             case 0: return [4 /*yield*/, axios_1.default.request({
                     method: "POST",
                     url: "/users",
-                    baseURL: "http://localhost:8080",
+                    baseURL: proto + host + ":" + port,
                     headers: {
                         "Content-Type": "application/json",
                     },
