@@ -1,45 +1,19 @@
 import express from "express";
 import bodyParser from "body-parser";
-import { createUser, getUserByID } from "./src/usersvc";
+import usersRouter from "./src/usersvc";
+import listingRouter from "./src/listingsvc";
 
 const app = express();
 app.use(bodyParser.json());
 
 const port = 8080;
 
-console.log("USERSVC:", process.env.USERSVC_URL);
-
 app.get("/", (_, res) => {
   res.send("HELLOOO WORLD!!");
 });
 
-app.get("/users/:id", async (req, res) => {
-  try {
-    const response = await getUserByID(req.params.id);
-
-    if (response.status === 200) {
-      res.send(response.data);
-    }
-  } catch (err) {
-    console.log(err);
-    res.statusCode = 500;
-    res.json({ error: "Internal Server Error" });
-  }
-});
-
-app.post("/users", async (req, res) => {
-  try {
-    const response = await createUser(req.body);
-
-    if (response.status === 200) {
-      res.send(response.data);
-    }
-  } catch (err) {
-    console.log(err);
-    res.statusCode = 500;
-    res.json({ error: "Internal Server Error" });
-  }
-});
+app.use("/users/", usersRouter);
+app.use("/listings/", listingRouter);
 
 app.listen(port, () => {
   console.log(`service=gateway port=${port}`);
