@@ -35,7 +35,7 @@ type userClaims struct {
 func VerifyUserAccessToken(tokenString string, userID string, userRole string) (valid bool, err error) {
 	token, err := jwt.ParseWithClaims(tokenString, &userClaims{}, func(token *jwt.Token) (interface{}, error) {
 		//Verify the signing method is HMAC
-		if s, ok := token.Method.(*jwt.SigningMethodHMAC); !ok || s != jwt.SigningMethodHS256 {
+		if s, ok := token.Method.(*jwt.SigningMethodHMAC); !ok || s != jwt.SigningMethodHS512 {
 			return nil, errors.New(ErrValidatingSignature)
 		}
 
